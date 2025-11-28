@@ -1,19 +1,17 @@
-[project]
+[tool.poetry]
 name = "options-ai"
 version = "0.1.0"
 description = ""
-authors = [
-    {name = "Austin Wo",email = "wworachet@gmail.com"}
-]
+authors = ["Austin Wo <wworachet@gmail.com>"]
 readme = "README.md"
-requires-python = ">=3.12"
-dependencies = [
-    "schwabdev (>=2.5.1,<3.0.0)",
-    "openai (>=2.8.1,<3.0.0)",
-    "flask (>=3.1.2,<4.0.0)",
-    "python-dotenv (>=1.2.1,<2.0.0)"
-]
+package-mode = false
 
+[tool.poetry.dependencies]
+python = ">=3.12"
+schwabdev = ">=2.5.1,<3.0.0"
+flask = ">=3.1.2,<4.0.0"
+python-dotenv = ">=1.2.1,<2.0.0"
+openai = {git = "https://github.com/openai/openai-python.git"}
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]

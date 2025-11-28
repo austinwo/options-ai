@@ -241,7 +241,9 @@ function renderRecommendations() {
                 Current: $${rec.price.toFixed(2)} | 
                 P/L: <span class="${gainLossClass}">${gainLossSign}$${rec.info.gainLoss.toFixed(0)}</span> |
                 ${rec.contracts} contracts available
+                <button id="rec-btn-${ticker}" class="rec-button" onclick="getRecommendation('${ticker}')">Get Recommendation</button>
             </div>
+            <div id="rec-result-${ticker}" class="rec-result"></div>
             <table>
                 <thead>
                     <tr>
@@ -281,6 +283,23 @@ function renderRecommendations() {
     }
     
     document.getElementById('recs-container').innerHTML = html;
+}
+
+async function getRecommendation(ticker) {
+    const button = document.getElementById(`rec-btn-${ticker}`);
+    const container = document.getElementById(`rec-result-${ticker}`);
+
+    button.disabled = true;
+    button.textContent = 'Thinking...';
+    container.innerHTML = '<div class="loading"><div class="spinner"></div>Getting recommendation...</div>';
+
+    const response = await fetch(`/api/recommendation/${ticker}`);
+    const data = await response.json();
+
+    button.disabled = false;
+    button.textContent = 'Get Recommendation';
+
+    container.innerHTML = `<div class="recommendation">${data.recommendation.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}</div>`;
 }
 
 // Initialize

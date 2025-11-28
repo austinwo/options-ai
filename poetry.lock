@@ -740,10 +740,8 @@ description = "The official Python library for the openai API"
 optional = false
 python-versions = ">=3.9"
 groups = ["main"]
-files = [
-    {file = "openai-2.8.1-py3-none-any.whl", hash = "sha256:c6c3b5a04994734386e8dad3c00a393f56d3b68a27cd2e8acae91a59e4122463"},
-    {file = "openai-2.8.1.tar.gz", hash = "sha256:cb1b79eef6e809f6da326a7ef6038719e35aa944c42d081807bfa1be8060f15f"},
-]
+files = []
+develop = false
 
 [package.dependencies]
 anyio = ">=3.5.0,<5"
@@ -760,6 +758,12 @@ aiohttp = ["aiohttp", "httpx-aiohttp (>=0.1.9)"]
 datalib = ["numpy (>=1)", "pandas (>=1.2.3)", "pandas-stubs (>=1.1.0.11)"]
 realtime = ["websockets (>=13,<16)"]
 voice-helpers = ["numpy (>=2.0.2)", "sounddevice (>=0.5.1)"]
+
+[package.source]
+type = "git"
+url = "https://github.com/openai/openai-python.git"
+reference = "HEAD"
+resolved_reference = "41ee03ffe985a7362f0275c7f500080cb1d58cdd"
 
 [[package]]
 name = "pycparser"
@@ -1176,4 +1180,4 @@ watchdog = ["watchdog (>=2.3)"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.12"
-content-hash = "20c86855b8a6d66f276a66caf82a0e1ade46464851f8aecae0348a297960ce66"
+content-hash = "f6680d024072f6fa3cfa1c97a6ea899aedb4e615ff1212a72c91dc003451b956"

@@ -158,3 +158,35 @@ tr:hover {
 #recommendations {
     margin-top: 30px;
 }
+
+.rec-button {
+    margin-left: 15px;
+    background: #2962FF;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.rec-button:hover {
+    background: #1E88E5;
+}
+
+.rec-button:disabled {
+    background: #555;
+    cursor: not-allowed;
+}
+
+.rec-result {
+    margin: 10px 0 15px 0;
+}
+
+.recommendation {
+    background: #252525;
+    border-left: 3px solid #2962FF;
+    padding: 15px;
+    color: #d1d4dc;
+    line-height: 1.6;
+}
