@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Options AI</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+</head>
+<body>
+    <h1>NVDA</h1>
+    <div id="legend"></div>
+    <div id="stats">
+        <span id="current-price"></span>
+        <span id="price-change"></span>
+    </div>
+    
+    <div class="controls chart-type">
+        <button id="btn-line" class="active" onclick="setChartType('line')">Line</button>
+        <button id="btn-candle" onclick="setChartType('candle')">Candlestick</button>
+    </div>
+    
+    <div class="controls time-period">
+        <button id="btn-1d" onclick="setPeriod('1d')">1D</button>
+        <button id="btn-5d" class="active" onclick="setPeriod('5d')">5D</button>
+        <button id="btn-1m" onclick="setPeriod('1m')">1M</button>
+        <button id="btn-6m" onclick="setPeriod('6m')">6M</button>
+        <button id="btn-1y" onclick="setPeriod('1y')">1Y</button>
+        <button id="btn-5y" onclick="setPeriod('5y')">5Y</button>
+    </div>
+    
+    <div class="controls symbols">
+        <button onclick="loadChart('NVDA')">NVDA</button>
+        <button onclick="loadChart('META')">META</button>
+        <button onclick="loadChart('AMZN')">AMZN</button>
+    </div>
+    
+    <div id="chart-container">
+        <div id="chart-loading" class="loading" style="display: none;">
+            <div class="spinner"></div>Loading chart...
+        </div>
+        <div id="chart"></div>
+    </div>
+
+    <div id="recommendations">
+        <h2>Your Positions & CC Recommendations</h2>
+        <div id="recs-container">
+            <div class="loading"><div class="spinner"></div>Loading recommendations...</div>
+        </div>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
