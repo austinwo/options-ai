@@ -2,7 +2,8 @@
 
 Options trading tool for covered call recommendations. Connects to Schwab API to analyze real positions and suggest optimal covered call strategies.
 
-<img width="1325" height="1181" alt="image" src="https://github.com/user-attachments/assets/14c8dcae-6e79-46ee-8c0f-cf889160c734" />
+<img width="1188" height="1132" alt="image" src="https://github.com/user-attachments/assets/844c9f40-c051-433e-bf28-ddd8115084a7" />
+
 
 ## Features
 
