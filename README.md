@@ -2,6 +2,8 @@
 
 Options trading tool for covered call recommendations. Connects to Schwab API to analyze real positions and suggest optimal covered call strategies.
 
+<img width="1325" height="1181" alt="image" src="https://github.com/user-attachments/assets/14c8dcae-6e79-46ee-8c0f-cf889160c734" />
+
 ## Features
 
 - Real-time stock charts (1D to 5Y) with TradingView-style interface
