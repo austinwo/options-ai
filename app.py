@@ -98,6 +98,8 @@ def get_recommendations():
                     weekly_return = (bid / underlying_price) * (7 / dte) * 100
                     annualized_return = (bid / underlying_price) * (365 / dte) * 100
                     total_premium = bid * contracts * 100
+                    otm_dollar = strike - underlying_price
+                    otm_pct = (otm_dollar / underlying_price) * 100
                     candidates.append({
                         "strike": strike,
                         "exp": exp_date.split(":")[0],
@@ -106,7 +108,9 @@ def get_recommendations():
                         "bid": bid,
                         "weeklyPct": round(weekly_return, 2),
                         "annualizedPct": round(annualized_return, 2),
-                        "totalPremium": round(total_premium, 0)
+                        "totalPremium": round(total_premium, 0),
+                        "otmDollar": round(otm_dollar, 2),
+                        "otmPct": round(otm_pct, 2)
                     })
         
         recommendations[ticker] = {

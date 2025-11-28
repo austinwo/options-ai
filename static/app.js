@@ -246,6 +246,8 @@ function renderRecommendations() {
                 <thead>
                     <tr>
                         <th onclick="sortCandidates('${ticker}', 'strike')">Strike${arrow('strike')}</th>
+                        <th onclick="sortCandidates('${ticker}', 'otmDollar')">OTM $${arrow('otmDollar')}</th>
+                        <th onclick="sortCandidates('${ticker}', 'otmPct')">OTM %${arrow('otmPct')}</th>
                         <th onclick="sortCandidates('${ticker}', 'exp')">Expiry${arrow('exp')}</th>
                         <th onclick="sortCandidates('${ticker}', 'dte')">DTE${arrow('dte')}</th>
                         <th onclick="sortCandidates('${ticker}', 'delta')">Delta${arrow('delta')}</th>
@@ -262,6 +264,8 @@ function renderRecommendations() {
             html += `
                 <tr>
                     <td>$${c.strike}</td>
+                    <td>$${c.otmDollar}</td>
+                    <td>${c.otmPct}%</td>
                     <td>${c.exp}</td>
                     <td>${c.dte}d</td>
                     <td>${c.delta}</td>
