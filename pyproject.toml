@@ -12,7 +12,13 @@ schwabdev = ">=2.5.1,<3.0.0"
 flask = ">=3.1.2,<4.0.0"
 python-dotenv = ">=1.2.1,<2.0.0"
 openai = {git = "https://github.com/openai/openai-python.git"}
+anthropic = "^0.75.0"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[dependency-groups]
+dev = [
+    "pytest (>=9.0.1,<10.0.0)"
+]
