@@ -4,7 +4,6 @@ Personal trading tool for covered call recommendations. Connects to Schwab API t
 
 <img width="1186" height="1189" alt="image" src="https://github.com/user-attachments/assets/414638b2-cd41-4d1f-b877-6109b763f0ba" />
 
-
 ## Features
 
 - Real-time stock charts (1D to 5Y) with TradingView-style interface

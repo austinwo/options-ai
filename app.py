@@ -256,8 +256,8 @@ Format your response as:
 [Your reasoning]
 """
 
-    provider = request.args.get("provider", "openai")
-    provider = request.args.get("model", "UNSPECIFIED")
+    provider = request.args.get("provider", "Anthropic")
+    model = request.args.get("model", "")
     if provider == "openai":
         if model == "o3-mini":
             response = openai_client.chat.completions.create(
