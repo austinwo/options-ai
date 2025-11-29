@@ -151,19 +151,29 @@ async function loadChart(symbol) {
     btn.classList.toggle("active", btn.textContent === symbol);
   });
 
-  // Show loading overlay
   document.getElementById("chart-loading").style.display = "flex";
 
-  const response = await fetch(
-    `/api/candles/${symbol}?period=${currentPeriod}`,
-  );
-  rawData = await response.json();
+  try {
+    const response = await fetch(
+      `/api/candles/${symbol}?period=${currentPeriod}`,
+    );
 
-  // Hide loading
-  document.getElementById("chart-loading").style.display = "none";
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || "Failed to load chart");
+    }
 
-  renderData();
-  updateStats();
+    rawData = await response.json();
+    renderData();
+    updateStats();
+  } catch (error) {
+    console.error("Chart error:", error);
+    document.getElementById("stats").innerHTML = `
+      <span style="color: #ef5350;">Error: ${error.message}</span>
+    `;
+  } finally {
+    document.getElementById("chart-loading").style.display = "none";
+  }
 }
 
 // Update stats
@@ -204,20 +214,22 @@ async function loadRecommendations() {
   document.getElementById("recs-container").innerHTML =
     '<div class="loading"><div class="spinner"></div>Loading recommendations...</div>';
 
-  const response = await fetch("/api/recommendations");
-  recsData = await response.json();
-  renderRecommendations();
-}
+  try {
+    const response = await fetch("/api/recommendations");
 
-function sortCandidates(ticker, column) {
-  if (!sortState[ticker]) {
-    sortState[ticker] = { column: column, ascending: true };
-  } else if (sortState[ticker].column === column) {
-    sortState[ticker].ascending = !sortState[ticker].ascending;
-  } else {
-    sortState[ticker] = { column: column, ascending: true };
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || "Failed to load recommendations");
+    }
+
+    recsData = await response.json();
+    renderRecommendations();
+  } catch (error) {
+    console.error("Recommendations error:", error);
+    document.getElementById("recs-container").innerHTML = `
+      <div style="color: #ef5350; padding: 20px;">Error: ${error.message}</div>
+    `;
   }
-  renderRecommendations();
 }
 
 function renderRecommendations() {
@@ -326,14 +338,25 @@ async function getRecommendation(ticker) {
     url += `&model=${currentModel}`;
   }
 
-  const response = await fetch(url);
-  const data = await response.json();
+  try {
+    const response = await fetch(url);
 
-  button.disabled = false;
-  button.textContent = "Get Recommendation";
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || "Failed to get recommendation");
+    }
 
-  container.innerHTML = `<div class="recommendation">${data.recommendation.replace(/\n/g, "<br>").replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")}</div>`;
+    const data = await response.json();
+    container.innerHTML = `<div class="recommendation">${data.recommendation.replace(/\n/g, "<br>").replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")}</div>`;
+  } catch (error) {
+    console.error("Recommendation error:", error);
+    container.innerHTML = `<div class="recommendation" style="border-left-color: #ef5350;">Error: ${error.message}</div>`;
+  } finally {
+    button.disabled = false;
+    button.textContent = "Get Recommendation";
+  }
 }
+
 // Initialize
 createChart();
 loadChart("NVDA");

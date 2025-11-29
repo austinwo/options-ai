@@ -1,9 +1,17 @@
 import os
+import logging
 from dotenv import load_dotenv
 from flask import Flask, render_template, jsonify, request
 import schwabdev
 from openai import OpenAI
 import anthropic
+
+# Setup logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
 load_dotenv()
 
@@ -23,8 +31,8 @@ def index():
 @app.route("/api/candles/<symbol>")
 def get_candles(symbol):
     period = request.args.get("period", "5d")
+    logger.info(f"Fetching candles for {symbol}, period={period}")
 
-    # Map period to Schwab API params
     period_map = {
         "1d": {
             "periodType": "day",
@@ -66,14 +74,18 @@ def get_candles(symbol):
 
     params = period_map.get(period, period_map["5d"])
 
-    response = client.price_history(
-        symbol,
-        periodType=params["periodType"],
-        period=params["period"],
-        frequencyType=params["frequencyType"],
-        frequency=params["frequency"],
-    )
-    data = response.json()
+    try:
+        response = client.price_history(
+            symbol,
+            periodType=params["periodType"],
+            period=params["period"],
+            frequencyType=params["frequencyType"],
+            frequency=params["frequency"],
+        )
+        data = response.json()
+    except Exception as e:
+        logger.error(f"Error fetching candles for {symbol}: {e}")
+        return jsonify({"error": f"Failed to fetch price data: {str(e)}"}), 500
 
     candles = [
         {
@@ -86,18 +98,23 @@ def get_candles(symbol):
         for c in data.get("candles", [])
     ]
 
+    logger.info(f"Returning {len(candles)} candles for {symbol}")
     return jsonify(candles)
 
 
 @app.route("/api/recommendations")
 def get_recommendations():
-    # Get accounts and positions
-    accounts = client.account_linked().json()
-    account_hash = accounts[0]["hashValue"]
-    account_data = client.account_details(account_hash, fields="positions").json()
-    positions = account_data["securitiesAccount"]["positions"]
+    logger.info("Fetching recommendations for all positions")
 
-    # Extract stock holdings (100+ shares only)
+    try:
+        accounts = client.account_linked().json()
+        account_hash = accounts[0]["hashValue"]
+        account_data = client.account_details(account_hash, fields="positions").json()
+        positions = account_data["securitiesAccount"]["positions"]
+    except Exception as e:
+        logger.error(f"Error fetching account positions: {e}")
+        return jsonify({"error": f"Failed to fetch positions: {str(e)}"}), 500
+
     holdings = {}
     for pos in positions:
         if pos["instrument"]["assetType"] == "EQUITY":
@@ -111,14 +128,23 @@ def get_recommendations():
                     "gainLoss": pos["longOpenProfitLoss"],
                 }
 
-    # Get CC recommendations for each holding
+    logger.info(f"Found {len(holdings)} positions with 100+ shares")
+
     recommendations = {}
     for ticker, info in holdings.items():
         contracts = info["shares"] // 100
 
-        response = client.option_chains(ticker)
-        data = response.json()
+        try:
+            response = client.option_chains(ticker)
+            data = response.json()
+        except Exception as e:
+            logger.error(f"Error fetching options chain for {ticker}: {e}")
+            continue
+
         underlying_price = data.get("underlyingPrice", 0)
+        if underlying_price <= 0:
+            logger.warning(f"Invalid underlying price for {ticker}: {underlying_price}")
+            continue
 
         candidates = []
         for exp_date, strikes in data.get("callExpDateMap", {}).items():
@@ -159,18 +185,23 @@ def get_recommendations():
             )[:10],
         }
 
+    logger.info(f"Returning recommendations for {len(recommendations)} tickers")
     return jsonify(recommendations)
 
 
 @app.route("/api/recommendation/<symbol>")
 def get_recommendation(symbol):
-    # Get position info
-    accounts = client.account_linked().json()
-    account_hash = accounts[0]["hashValue"]
-    account_data = client.account_details(account_hash, fields="positions").json()
-    positions = account_data["securitiesAccount"]["positions"]
+    logger.info(f"Fetching AI recommendation for {symbol}")
 
-    # Find this symbol's position
+    try:
+        accounts = client.account_linked().json()
+        account_hash = accounts[0]["hashValue"]
+        account_data = client.account_details(account_hash, fields="positions").json()
+        positions = account_data["securitiesAccount"]["positions"]
+    except Exception as e:
+        logger.error(f"Error fetching account positions: {e}")
+        return jsonify({"error": f"Failed to fetch positions: {str(e)}"}), 500
+
     position = None
     for pos in positions:
         if (
@@ -185,14 +216,21 @@ def get_recommendation(symbol):
             break
 
     if not position:
+        logger.warning(f"Position not found for {symbol}")
         return jsonify({"error": "Position not found"}), 404
 
-    # Get options chain
-    response = client.option_chains(symbol)
-    data = response.json()
-    underlying_price = data.get("underlyingPrice", 0)
+    try:
+        response = client.option_chains(symbol)
+        data = response.json()
+    except Exception as e:
+        logger.error(f"Error fetching options chain for {symbol}: {e}")
+        return jsonify({"error": f"Failed to fetch options chain: {str(e)}"}), 500
 
-    # Get top 5 CC candidates
+    underlying_price = data.get("underlyingPrice", 0)
+    if underlying_price <= 0:
+        logger.warning(f"Invalid underlying price for {symbol}: {underlying_price}")
+        return jsonify({"error": "Invalid underlying price"}), 500
+
     candidates = []
     for exp_date, strikes in data.get("callExpDateMap", {}).items():
         for strike_price, options in strikes.items():
@@ -226,7 +264,6 @@ def get_recommendation(symbol):
 
     candidates = sorted(candidates, key=lambda x: x["weeklyPct"], reverse=True)[:10]
 
-    # Build prompt
     prompt = f"""You are an options trading advisor. Give a specific covered call recommendation for {symbol}.
 
 POSITION:
@@ -236,7 +273,7 @@ POSITION:
 - Unrealized P/L: ${position["gainLoss"]:.0f}
 - Contracts available: {position["shares"] // 100}
 
-TOP 5 CC CANDIDATES:
+TOP CC CANDIDATES:
 """
 
     for c in candidates:
@@ -256,32 +293,38 @@ Format your response as:
 [Your reasoning]
 """
 
-    provider = request.args.get("provider", "Anthropic")
+    provider = request.args.get("provider", "anthropic")
     model = request.args.get("model", "")
-    if provider == "openai":
-        if model == "o3-mini":
-            response = openai_client.chat.completions.create(
-                model="o3-mini",
-                reasoning_effort="low",
-                messages=[{"role": "user", "content": prompt}],
-            )
+
+    logger.info(f"Calling LLM provider={provider}, model={model}")
+
+    try:
+        if provider == "openai":
+            if model == "o3-mini":
+                response = openai_client.chat.completions.create(
+                    model="o3-mini",
+                    reasoning_effort="low",
+                    messages=[{"role": "user", "content": prompt}],
+                )
+            else:
+                response = openai_client.chat.completions.create(
+                    model="gpt-4o-mini",
+                    messages=[{"role": "user", "content": prompt}],
+                    max_tokens=300,
+                )
             recommendation = response.choices[0].message.content
         else:
-            # defaults to gpt-4o-mini
-            response = openai_client.chat.completions.create(
-                model="gpt-4o-mini",
-                messages=[{"role": "user", "content": prompt}],
+            response = anthropic_client.messages.create(
+                model="claude-sonnet-4-20250514",
                 max_tokens=300,
+                messages=[{"role": "user", "content": prompt}],
             )
-            recommendation = response.choices[0].message.content
-    else:
-        # defaults to Anthropic
-        response = anthropic_client.messages.create(
-            model="claude-sonnet-4-20250514",
-            max_tokens=300,
-            messages=[{"role": "user", "content": prompt}],
-        )
-        recommendation = response.content[0].text
+            recommendation = response.content[0].text
+    except Exception as e:
+        logger.error(f"Error calling LLM: {e}")
+        return jsonify({"error": f"Failed to get AI recommendation: {str(e)}"}), 500
+
+    logger.info(f"Successfully generated recommendation for {symbol}")
 
     return jsonify(
         {
@@ -295,4 +338,7 @@ Format your response as:
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5001)
+    debug = os.getenv("FLASK_DEBUG", "false").lower() == "true"
+    port = int(os.getenv("PORT", 5001))
+    logger.info(f"Starting Options AI on port {port}, debug={debug}")
+    app.run(debug=debug, port=port)
