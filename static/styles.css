@@ -1,192 +1,207 @@
 body {
-    margin: 0;
-    padding: 20px;
-    background: #1a1a1a;
-    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  margin: 0;
+  padding: 20px;
+  background: #1a1a1a;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 h1 {
-    color: #fff;
-    margin-bottom: 10px;
+  color: #fff;
+  margin-bottom: 10px;
 }
 
 h2 {
-    color: #fff;
+  color: #fff;
 }
 
 #legend {
-    color: #d1d4dc;
-    font-size: 14px;
-    margin-bottom: 10px;
-    height: 20px;
+  color: #d1d4dc;
+  font-size: 14px;
+  margin-bottom: 10px;
+  height: 20px;
 }
 
 #stats {
-    color: #d1d4dc;
-    font-size: 18px;
-    margin-bottom: 15px;
-    min-height: 30px;
+  color: #d1d4dc;
+  font-size: 18px;
+  margin-bottom: 15px;
+  min-height: 30px;
 }
 
 #current-price {
-    font-size: 24px;
-    font-weight: bold;
+  font-size: 24px;
+  font-weight: bold;
 }
 
 #chart-container {
-    width: 100%;
-    height: 500px;
-    position: relative;
+  width: 100%;
+  height: 500px;
+  position: relative;
 }
 
 #chart {
-    width: 100%;
-    height: 100%;
+  width: 100%;
+  height: 100%;
 }
 
 #chart-loading {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(26, 26, 26, 0.9);
-    z-index: 10;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(26, 26, 26, 0.9);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .controls {
-    margin-bottom: 15px;
+  margin-bottom: 15px;
 }
 
 .controls button {
-    background: #2962FF;
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    margin-right: 8px;
-    border-radius: 4px;
-    cursor: pointer;
+  background: #2962ff;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  margin-right: 8px;
+  border-radius: 4px;
+  cursor: pointer;
 }
 
 .controls button:hover {
-    background: #1E88E5;
+  background: #1e88e5;
 }
 
 .chart-type button,
 .time-period button,
 .symbols button {
-    background: #333;
+  background: #333;
 }
 
 .chart-type button.active,
 .time-period button.active,
 .symbols button.active {
-    background: #2962FF;
+  background: #2962ff;
 }
 
 /* Tables */
 table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 30px;
-    color: #d1d4dc;
-    table-layout: fixed;
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 30px;
+  color: #d1d4dc;
+  table-layout: fixed;
 }
 
-th, td {
-    padding: 10px;
-    text-align: left;
-    border-bottom: 1px solid #2B2B43;
+th,
+td {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid #2b2b43;
 }
 
 th {
-    background: #2B2B43;
-    color: #fff;
-    white-space: nowrap;
-    cursor: pointer;
+  background: #2b2b43;
+  color: #fff;
+  white-space: nowrap;
+  cursor: pointer;
 }
 
 tr:hover {
-    background: #252525;
+  background: #252525;
 }
 
 .ticker-header {
-    color: #2962FF;
-    font-size: 20px;
-    margin: 20px 0 10px 0;
+  color: #2962ff;
+  font-size: 20px;
+  margin: 20px 0 10px 0;
 }
 
 .position-info {
-    color: #888;
-    margin-bottom: 10px;
+  color: #888;
+  margin-bottom: 10px;
 }
 
 .positive {
-    color: #26a69a;
+  color: #26a69a;
 }
 
 .negative {
-    color: #ef5350;
+  color: #ef5350;
 }
 
 /* Loading */
 .loading {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 40px;
-    color: #888;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  color: #888;
 }
 
 .spinner {
-    width: 24px;
-    height: 24px;
-    border: 3px solid #333;
-    border-top-color: #2962FF;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin-right: 10px;
+  width: 24px;
+  height: 24px;
+  border: 3px solid #333;
+  border-top-color: #2962ff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-right: 10px;
 }
 
 @keyframes spin {
-    to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 #recommendations {
-    margin-top: 30px;
+  margin-top: 30px;
 }
 
 .rec-button {
-    margin-left: 15px;
-    background: #2962FF;
-    color: white;
-    border: none;
-    padding: 6px 12px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
+  margin-left: 15px;
+  background: #2962ff;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
 }
 
 .rec-button:hover {
-    background: #1E88E5;
+  background: #1e88e5;
 }
 
 .rec-button:disabled {
-    background: #555;
-    cursor: not-allowed;
+  background: #555;
+  cursor: not-allowed;
 }
 
 .rec-result {
-    margin: 10px 0 15px 0;
+  margin: 10px 0 15px 0;
 }
 
 .recommendation {
-    background: #252525;
-    border-left: 3px solid #2962FF;
-    padding: 15px;
-    color: #d1d4dc;
-    line-height: 1.6;
+  background: #252525;
+  border-left: 3px solid #2962ff;
+  padding: 15px;
+  color: #d1d4dc;
+  line-height: 1.6;
+}
+
+.model-select {
+  margin-bottom: 20px;
+}
+
+.model-select button {
+  background: #333;
+}
+
+.model-select button.active {
+  background: #2962ff;
 }
